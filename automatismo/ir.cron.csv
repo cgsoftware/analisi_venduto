@@ -1,0 +1,2 @@
+"active","function","name","interval_number","numbercall","model","priority","nextcall","doall","interval_type","user_id"
+"True","run_auto_import_analisi","Importazione Analisi del venduto",1,1,"analisi.venduto",5,"2012-04-03 22:00:00","True","Months","Administrator"

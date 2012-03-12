@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<record model="ir.ui.view" id="view_action_ricalcola_periodi">
+                <field name="name">Ricalcolo Periodo</field>
+                <field name="model">parcalcolo.analisi.venduto</field>
+                <field name="type">form</field>
+                <field name="arch" type="xml">
+                    <form string="Parametri">
+                        <field name="periodo" select="1" colspan="4"/>
+                        <field name="partner" colspan="4"/>
+                        <newline />
+                    	<separator string="" colspan="4"/>
+                    	<label string=""  colspan="2" />
+                        <button special="cancel" string="Cancel" icon="gtk-cancel"/>
+                    	<button name="agg_dati" string="Ok" type="object" icon="gtk-go-forward"/>
+                    </form>
+                </field>
+            </record>
+    	
+    	
+    	
+    	
+    	<record id="action_ricalcola_periodi" model="ir.actions.act_window">
+            <field name="name">Ricalcolo Periodo</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">parcalcolo.analisi.venduto</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            
+        </record>
+</data>
+</openerp>

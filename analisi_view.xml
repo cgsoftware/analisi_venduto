@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+	 
+	 
+	 
+	 
+	 <record model="ir.ui.view" id="view_analisi_venduto">
+	  <field name="name">view_analisi</field>
+	  <field name="model">res.partner</field>
+	  <field name="inherit_id" ref="base.view_partner_form"/>
+	  <field name="arch" type="xml">
+	    <notebook position="inside">
+	      <page string="Analisi venduto">
+			<separator colspan="4" string=" " />
+				<field name="venduto" nolabel="1" mode="tree" string="Compatibilità"> 
+		 			<tree string="Analisi delle vendite " >
+		
+						<field name ="periodo_id"  />
+	 					<field name ="totale"  />
+	 				</tree>
+	 				</field>
+	 				<newline></newline>
+	 				<button name="%(action_ricalcola_periodi)d" string="Ricalcola Periodo"
+                                    type="action" icon="gtk-execute" states="draft,manual"/>
+	 				<!--  <button name="agg_dati"  string="Ricalcola Dati" type="object" icon="gtk-execute"/>
+		-->
+	      </page>
+	    </notebook>
+	  </field>
+	</record>
+	
+	           
+	
+	
+	</data>
+</openerp>
+	
