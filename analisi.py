@@ -142,6 +142,48 @@ class analisi_vendite (osv.osv):
         print testo_log
         return True
     
+    def run_auto_import_analisi_precedenti(self, cr, uid, automatic=False, use_new_cursor=False, context=None):
+      pool = pooler.get_pool(cr.dbname)  
+      res = {}
+      testo_log = """Inizio procedura di Aggiornamento/Inserimento Analisi anni precedenti """ + time.ctime() + '\n'
+      print testo_log
+      percorso ='/home/openerp/filecsv' #'/home/andrea/openerp/filecsv'
+      partner_obj = self.pool.get('res.partner')
+      analisi_obj = self.pool.get('analisi.venduto')
+      periodo_obj = self.pool.get('account.period')
+      if use_new_cursor:
+        cr = pooler.get_db(use_new_cursor).cursor()
+      elenco_csv = os.listdir(percorso)
+      for filecsv in elenco_csv:
+          
+          lines = csv.reader(open(percorso + '/' + filecsv, 'rb'), delimiter=",")
+          inseriti = 0
+          for riga in  lines:
+              
+              filtro = [('ref', '=', riga[0])  ]
+              partner = partner_obj.search(cr,uid,filtro)
+              #ho trovato l'id del partner
+              #ricostruisco il periodo
+              giornos = str(riga[2]).zfill(2)
+              data=giornos+'/'+riga[1]
+              filtro2 = [('name','=',data)]
+              periodo = periodo_obj.search(cr,uid, filtro2)
+              #ho trovato l'id della riga del periodo
+              #import pdb;pdb.set_trace()
+              riga_wr = {'name' : partner[0],
+                         'periodo_id': periodo[0],
+                         'totale':riga[3].replace(',', '.'),
+                     
+                        }
+              ok = analisi_obj.create(cr, uid, riga_wr)
+              inseriti = inseriti + 1
+              testo_log = """FINE procedura di Aggiornamento/Inserimento Analisi anni precedenti""" + time.ctime() + '\n'
+              print testo_log
+              print inseriti      
+      return True
+  
+          
+    
  
 
  

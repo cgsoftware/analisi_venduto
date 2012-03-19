@@ -28,7 +28,7 @@
     'author': 'C & G Software sas',
     'website': 'http://www.cgsoftware.it',
     "depends" : ['ItalianFiscalDocument'],
-    "update_xml" : ['wizard/aggiornamento.xml','analisi_view.xml','automatismo/ir.cron.csv'],
+    "update_xml" : ['wizard/aggiornamento.xml','analisi_view.xml','automatismo/ir.cron.csv','security/ir.model.access.csv'],
     "active": False,
     "installable": True
 }
