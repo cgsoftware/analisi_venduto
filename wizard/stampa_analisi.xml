@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+
+		<record id="action_stampa_analisi_venduto" model="ir.ui.view">
+            <field name="name">Stampa_analisi_venduto</field>
+            <field name="model">stampa.analisi.venduto</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            	<form string="Parametri di Stampa" >
+            		<field name="periodo1" colspan="2" on_change="on_change_value(periodo1, context)"/>
+            		<field name="periodo1_1" colspan="2" on_change="on_change_value2(periodo1_1, context)"/> 
+            		<field name="periodo2" colspan="2" />
+            		<field name="periodo2_2" colspan="2" /> 
+            		<field name="periodo3" colspan="2" />
+            		<field name="periodo3_3" colspan="2" />
+
+		            <field name="partner" colspan="4"/>
+                    <field name="agente" width="300" colspan="4"/>
+                    <separator colspan="4"/>
+                        <group col="4" colspan="4">
+                            <button icon="gtk-cancel" special="cancel" string="Cancel" colspan="2"/>
+                            <button icon="gtk-print" name="crea_temp" string="Stampa" type="object" colspan="2" default_focus="1" />
+                        </group>
+                </form>
+            </field>
+        </record>
+        
+        
+        <!--  <act_window name="Stampa analisi delle vendite"
+            res_model="stampa.analisi.venduto"
+            src_model="stampa.analisi.venduto"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="action_stampa_analisi_venduto"/>
+        domain="[('field', 'condition', active_id)]" 
+        <menuitem action="action_stampa_analisi_venduto" 
+            icon = 'STOCK_JUSTIFY_FILL'
+            name='Stampa analisi delle vendite'
+            id="menu_stampa_analisi_vendite" 
+            parent="menu_stampe_vendite"  sequence="8"/> 	-->	
+            
+            
+                   
+        <act_window name="Stampa analisi delle vendite"
+			view_mode="form"
+			target="new"
+            key2="client_action_multi"
+			res_model="stampa.analisi.venduto"
+			src_model="stampa.analisi.venduto"
+			id="action_stampa_analisi_venduto"/>
+			
+	<menuitem action="action_stampa_analisi_venduto"
+			  id="menu_stampa_analisi_vendite" 
+			  name="Stampa analisi delle vendite" 
+			  parent="Reportistica.menu_stampe_vendite" 
+			  />
+
+	
+	 
+  </data>
+</openerp>
+                

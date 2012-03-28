@@ -122,7 +122,7 @@ class analisi_vendite (osv.osv):
         #import pdb;pdb.set_trace()
         
         if mese_prec in "04-06-09-11":
-            data = annos + "-" + mese_prec + "-" + "30"
+            data = annos 
         else:
             data = annos + "-" + mese_prec + "-" + "31"
         if mese_prec in "02":

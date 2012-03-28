@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="venduto" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="52"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="periodo1" class="java.lang.String"/>
+	<parameter name="periodo2" class="java.lang.String"/>
+	<parameter name="periodo3" class="java.lang.String"/>
+	<parameter name="partner" class="java.lang.String"/>
+	<parameter name="agente" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     analisi_venduto."partner_id" AS analisi_venduto_partner_id,
+     analisi_venduto."periodo_id" AS analisi_venduto_periodo_id,
+     analisi_venduto."name_moved0" AS analisi_venduto_name_moved0,
+     analisi_venduto."totale" AS analisi_venduto_totale,
+     analisi_venduto."partner" AS analisi_venduto_partner,
+     analisi_venduto."name" AS analisi_venduto_name,
+     account_period."special" AS account_period_special,
+     account_period."state" AS account_period_state,
+     account_period."company_id" AS account_period_company_id,
+     account_period."fiscalyear_id" AS account_period_fiscalyear_id,
+     account_period."date_start" AS account_period_date_start,
+     account_period."name" AS account_period_name,
+     account_period."code" AS account_period_code,
+     account_period."date_stop" AS account_period_date_stop,
+     res_partner."name" AS res_partner_name,
+     sale_agent."name" AS sale_agent_name,
+     sale_agent."commission_rate" AS sale_agent_commission_rate,
+     sale_agent."active" AS sale_agent_active,
+     sale_agent."partner_id" AS sale_agent_partner_id,
+     sale_agent."comprice_id" AS sale_agent_comprice_id
+FROM
+     "public"."account_period" account_period RIGHT OUTER JOIN "public"."analisi_venduto" analisi_venduto ON account_period."id" = analisi_venduto."periodo_id"
+     LEFT OUTER JOIN "public"."res_partner" res_partner ON analisi_venduto."partner_id" = res_partner."id"
+     LEFT OUTER JOIN "public"."sale_agent" sale_agent ON res_partner."agent_id" = sale_agent."id"]]>
+	</queryString>
+	<field name="analisi_venduto_partner_id" class="java.lang.Integer"/>
+	<field name="analisi_venduto_periodo_id" class="java.lang.Integer"/>
+	<field name="analisi_venduto_name_moved0" class="java.lang.String"/>
+	<field name="analisi_venduto_totale" class="java.math.BigDecimal"/>
+	<field name="analisi_venduto_partner" class="java.lang.Integer"/>
+	<field name="analisi_venduto_name" class="java.lang.Integer"/>
+	<field name="account_period_special" class="java.lang.Boolean"/>
+	<field name="account_period_state" class="java.lang.String"/>
+	<field name="account_period_company_id" class="java.lang.Integer"/>
+	<field name="account_period_fiscalyear_id" class="java.lang.Integer"/>
+	<field name="account_period_date_start" class="java.sql.Date"/>
+	<field name="account_period_name" class="java.lang.String"/>
+	<field name="account_period_code" class="java.lang.String"/>
+	<field name="account_period_date_stop" class="java.sql.Date"/>
+	<field name="res_partner_name" class="java.lang.String"/>
+	<field name="sale_agent_name" class="java.lang.String"/>
+	<field name="sale_agent_commission_rate" class="java.lang.Double"/>
+	<field name="sale_agent_active" class="java.lang.Boolean"/>
+	<field name="sale_agent_partner_id" class="java.lang.Integer"/>
+	<field name="sale_agent_comprice_id" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mainetti Omaf]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="21" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

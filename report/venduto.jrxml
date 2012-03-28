@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="venduto" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="periodo1" class="java.lang.String"/>
+	<parameter name="periodo2" class="java.lang.String"/>
+	<parameter name="periodo3" class="java.lang.String"/>
+	<parameter name="partner" class="java.lang.String"/>
+	<parameter name="agente" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     tempstatistiche_analisi."agente" AS tempstatistiche_analisi_agente,
+     tempstatistiche_analisi."valore2" AS tempstatistiche_analisi_valore2,
+     tempstatistiche_analisi."valore3" AS tempstatistiche_analisi_valore3,
+     tempstatistiche_analisi."valore1" AS tempstatistiche_analisi_valore1,
+     tempstatistiche_analisi."range3" AS tempstatistiche_analisi_range3,
+     tempstatistiche_analisi."range2" AS tempstatistiche_analisi_range2,
+     tempstatistiche_analisi."range1" AS tempstatistiche_analisi_range1,
+     tempstatistiche_analisi."partner" AS tempstatistiche_analisi_partner,
+     tempstatistiche_analisi."analisi_id" AS tempstatistiche_analisi_analisi_id
+FROM
+     "public"."tempstatistiche_analisi" tempstatistiche_analisi
+ORDER BY  tempstatistiche_analisi."agente" ASC, tempstatistiche_analisi_partner ASC]]>
+	</queryString>
+	<field name="tempstatistiche_analisi_agente" class="java.lang.String"/>
+	<field name="tempstatistiche_analisi_valore2" class="java.math.BigDecimal"/>
+	<field name="tempstatistiche_analisi_valore3" class="java.math.BigDecimal"/>
+	<field name="tempstatistiche_analisi_valore1" class="java.math.BigDecimal"/>
+	<field name="tempstatistiche_analisi_range3" class="java.lang.String"/>
+	<field name="tempstatistiche_analisi_range2" class="java.lang.String"/>
+	<field name="tempstatistiche_analisi_range1" class="java.lang.String"/>
+	<field name="tempstatistiche_analisi_partner" class="java.lang.String"/>
+	<field name="tempstatistiche_analisi_analisi_id" class="java.lang.Integer"/>
+	<variable name="totale_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{tempstatistiche_analisi_valore1}]]></variableExpression>
+	</variable>
+	<variable name="totale_2" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{tempstatistiche_analisi_valore2}]]></variableExpression>
+	</variable>
+	<variable name="totale_3" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{tempstatistiche_analisi_valore3}]]></variableExpression>
+	</variable>
+	<variable name="totale_ag_1" class="java.math.BigDecimal" resetType="Group" resetGroup="Agente" calculation="Sum">
+		<variableExpression><![CDATA[$F{tempstatistiche_analisi_valore1}]]></variableExpression>
+	</variable>
+	<variable name="totale_ag_2" class="java.math.BigDecimal" resetType="Group" resetGroup="Agente" calculation="Sum">
+		<variableExpression><![CDATA[$F{tempstatistiche_analisi_valore2}]]></variableExpression>
+	</variable>
+	<variable name="totale_ag_3" class="java.math.BigDecimal" resetType="Group" resetGroup="Agente" calculation="Sum">
+		<variableExpression><![CDATA[$F{tempstatistiche_analisi_valore3}]]></variableExpression>
+	</variable>
+	<group name="Agente" isReprintHeaderOnEachPage="true">
+		<groupExpression><![CDATA[$F{tempstatistiche_analisi_agente}]]></groupExpression>
+		<groupHeader>
+			<band height="42">
+				<textField>
+					<reportElement x="307" y="20" width="100" height="20" forecolor="#0015FF"/>
+					<textElement textAlignment="Right">
+						<font isBold="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="481" y="20" width="100" height="20" forecolor="#01730C"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo2}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="656" y="20" width="100" height="20" forecolor="#9100FF"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo3}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="41" width="802" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="0" y="20" width="145" height="20"/>
+					<textElement>
+						<font size="12" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Cliente]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="255" y="20" width="52" height="20" forecolor="#FF0000"/>
+					<textElement>
+						<font size="12" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Cod. Ag]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="307" height="20" forecolor="#FF0000"/>
+					<textElement textAlignment="Left"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{tempstatistiche_analisi_agente}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="47">
+				<staticText>
+					<reportElement x="0" y="0" width="122" height="20" forecolor="#FF0000"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Totali per Agente]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="656" y="0" width="100" height="20" forecolor="#9100FF"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{totale_ag_3}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="481" y="0" width="100" height="20" forecolor="#01730C"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{totale_ag_2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="307" y="0" width="100" height="20" forecolor="#0015FF"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{totale_ag_1}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="21" width="802" height="1" forecolor="#FF0000"/>
+					<graphicElement>
+						<pen lineWidth="3.0" lineStyle="Double"/>
+					</graphicElement>
+				</line>
+				<textField isBlankWhenNull="true">
+					<reportElement x="122" y="0" width="185" height="20" forecolor="#FF0000"/>
+					<textElement textAlignment="Left"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{tempstatistiche_analisi_agente}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mainetti Omaf]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="75" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="332" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stampa dell'andamento del venduto di periodo]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="772" y="10" width="30" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="742" y="10" width="30" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pg.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="30" width="145" height="20">
+					<printWhenExpression><![CDATA[$P{partner}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente Selezionato]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="145" y="30" width="597" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{partner}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="50" width="145" height="20">
+					<printWhenExpression><![CDATA[$P{agente}]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Agente Selezionato]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="145" y="50" width="597" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{agente}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<textField>
+				<reportElement x="307" y="1" width="100" height="20" forecolor="#0015FF"/>
+				<textElement textAlignment="Right">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="481" y="1" width="100" height="20" forecolor="#01730C"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="656" y="0" width="100" height="20" forecolor="#9100FF"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo3}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="20" width="802" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="1" width="145" height="20"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="1" width="52" height="20" forecolor="#FF0000"/>
+				<textElement>
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cod. Ag]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="20" width="802" height="1"/>
+			</line>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="307" y="1" width="100" height="20" forecolor="#0015FF"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{tempstatistiche_analisi_valore1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="481" y="1" width="100" height="20" forecolor="#01730C"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{tempstatistiche_analisi_valore2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="656" y="1" width="100" height="20" forecolor="#9100FF"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{tempstatistiche_analisi_valore3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="255" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tempstatistiche_analisi_partner}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="255" y="1" width="52" height="20" forecolor="#FF0000"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{tempstatistiche_analisi_agente}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="50">
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="656" y="20" width="100" height="20" forecolor="#9100FF"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{totale_3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="307" y="20" width="100" height="20" forecolor="#0015FF"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{totale_1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="481" y="20" width="100" height="20" forecolor="#01730C"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{totale_2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="481" y="0" width="100" height="20" forecolor="#01730C"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="307" y="0" width="100" height="20" forecolor="#0015FF"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo1}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="307" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Totali Generali]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="656" y="0" width="100" height="20" forecolor="#9100FF"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{periodo3}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="20" width="307" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[	]]></text>
+			</staticText>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
