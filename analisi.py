@@ -37,8 +37,22 @@ class analisi_vendite (osv.osv):
         filtro1 = [('tipo_documento', 'in', ('FA','FI','FD','NC'))] #AGGIUNGERE NOTE CREDITO E NOTE DEBITO
         idsTipoDoc = self.pool.get('fiscaldoc.causalidoc').search(cr, uid, filtro1)
         idsTipoDoc = tuple(idsTipoDoc)
+        #CERCO LE RIGHE CON LO STESSO PERIODO DI QUELLO DA ANALIZZARE
+        analisi_obj = self.pool.get('analisi.venduto')
+        trova = [('periodo_id','=', periodo.id)]
+        analisi_ids= analisi_obj.search(cr,uid, trova)
+        if analisi_ids:
+            #HO DELLE RIGHE PER IL PERIODO CHE STO CALCOLANDO LE CANCELLO PRIMA DI PROCEDERE
+            analisi_obj.unlink(cr, uid, analisi_ids)
         #import pdb;pdb.set_trace()
         #filtro_data=[('data_documento','=','2012-01-31' )]
+        
+        
+        
+        
+        
+        
+        
         if partner<>0:
             filtro_data=[('data_documento','<=',periodo.date_stop ),('data_documento','>=', periodo.date_start ),('tipo_doc','in',idsTipoDoc),('partner_id','=', partner.id)]
         else:
@@ -63,9 +77,9 @@ class analisi_vendite (osv.osv):
                         if id_temp2:
                             riga_temp2 = self.browse(cr,uid,id_temp2)[0]
                             if doc.tipo_doc.tipo_documento == 'NC':
-                                rigawr={'totale':riga_temp2.totale-doc.totale_netto_merce}#totale_netto merce
+                                rigawr={'totale':riga_temp2.totale-doc.totale_merce}#totale_netto merce
                             else:
-                                rigawr={'totale':riga_temp2.totale+doc.totale_netto_merce}#totale_netto merce
+                                rigawr={'totale':riga_temp2.totale+doc.totale_merce}#totale_netto merce
                             ok = self.write(cr,uid,id_temp2,rigawr)
                         else:
                             if doc.tipo_doc.tipo_documento == 'NC':
@@ -147,10 +161,14 @@ class analisi_vendite (osv.osv):
       res = {}
       testo_log = """Inizio procedura di Aggiornamento/Inserimento Analisi anni precedenti """ + time.ctime() + '\n'
       print testo_log
-      percorso ='/home/openerp/filecsv' #'/home/andrea/openerp/filecsv'
+      percorso = '/home/andrea/openerp/filecsv'#'/home/openerp/filecsv'
       partner_obj = self.pool.get('res.partner')
       analisi_obj = self.pool.get('analisi.venduto')
       periodo_obj = self.pool.get('account.period')
+      #cerca =[('totale','>=','0')]
+      
+      #import pdb;pdb.set_trace()
+      errori = {}
       if use_new_cursor:
         cr = pooler.get_db(use_new_cursor).cursor()
       elenco_csv = os.listdir(percorso)
@@ -159,7 +177,7 @@ class analisi_vendite (osv.osv):
           lines = csv.reader(open(percorso + '/' + filecsv, 'rb'), delimiter=",")
           inseriti = 0
           for riga in  lines:
-              
+              #import pdb;pdb.set_trace()
               filtro = [('ref', '=', riga[0])  ]
               partner = partner_obj.search(cr,uid,filtro)
               #ho trovato l'id del partner
@@ -170,17 +188,40 @@ class analisi_vendite (osv.osv):
               periodo = periodo_obj.search(cr,uid, filtro2)
               #ho trovato l'id della riga del periodo
               #import pdb;pdb.set_trace()
-              riga_wr = {'name' : partner[0],
+              if partner:
+                  riga_wr = {'name' : partner[0],
                          'periodo_id': periodo[0],
                          'totale':riga[3].replace(',', '.'),
                      
                         }
-              ok = analisi_obj.create(cr, uid, riga_wr)
-              inseriti = inseriti + 1
-              testo_log = """FINE procedura di Aggiornamento/Inserimento Analisi anni precedenti""" + time.ctime() + '\n'
-              print testo_log
-              print inseriti      
+              #print riga_wr
+                  ok = analisi_obj.create(cr, uid, riga_wr)
+                  inseriti = inseriti + 1
+              else:
+                  errori = {'part': riga[0]
+                            }
+              #testo_log = """FINE procedura di Aggiornamento/Inserimento Analisi anni precedenti""" + time.ctime() + '\n'
+              #print testo_log
+              print inseriti    
+              if errori:
+                  print errori  
       return True
+  
+      
+    def run_auto_id_scadenze(self, cr, uid, automatic=False, use_new_cursor=False, context=None):
+        import pdb;pdb.set_trace() 
+        Scadobj = self.pool.get('fiscaldoc.scadenze')
+        FatObj = self.pool.get('fiscaldoc.header')
+        filtro1 = [('tipo_documento', '=', 'FA')]
+        idsTipoDoc = self.pool.get('fiscaldoc.causalidoc').search(cr, uid, filtro1)
+        idsTipoDoc = tuple(idsTipoDoc)
+        filtro = [('effetto_scadenza_id', '=', '')]
+        idsScad = Scadobj.search(cr, uid, filtro)
+        ids_effetti = []
+        return
+    
+        
+            
   
           
     

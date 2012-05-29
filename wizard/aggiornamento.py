@@ -10,7 +10,8 @@ class lancio_manuale(osv.osv_memory):
     _name = 'parcalcolo.analisi.venduto'
     _description = 'paramentri per il calcolo del venduto partner manuale'
     _columns = {'periodo':fields.many2one('account.period', 'Periodo', required=True),
-                'partner':fields.many2one('res.partner', 'Cliente'),}
+                'partner':fields.many2one('res.partner', 'Cliente'),
+                'tutti':fields.boolean('Aggiorno tutti i clienti del periodo?', required=False)}
     
     
     def agg_dati(self, cr, uid, ids, context=None):
@@ -19,8 +20,11 @@ class lancio_manuale(osv.osv_memory):
         periodo = parametri.periodo
         partner = parametri.partner
         partner_obj = self.pool.get('res.partner')
-        
-        res = self.pool.get('analisi.venduto')._import_analisi_vendite(cr, uid, partner_obj, periodo, partner,context)
+        if parametri.tutti:
+            partner=0
+            res = self.pool.get('analisi.venduto')._import_analisi_vendite(cr, uid, partner_obj, periodo, partner,context)
+        else:
+            res = self.pool.get('analisi.venduto')._import_analisi_vendite(cr, uid, partner_obj, periodo, partner,context)
 
         
         return {'type': 'ir.actions.act_window_close'}

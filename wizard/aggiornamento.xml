@@ -9,6 +9,7 @@
                     <form string="Parametri">
                         <field name="periodo" select="1" colspan="4"/>
                         <field name="partner" colspan="4"/>
+                        <field name="tutti" colspan="4"/>
                         <newline />
                     	<separator string="" colspan="4"/>
                     	<label string=""  colspan="2" />

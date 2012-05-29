@@ -14,6 +14,7 @@ import math
 
 import tools
 import ir
+import base64
 
 
 #from tools.translate import _
@@ -31,17 +32,16 @@ class tempstatistiche_analisi(osv.osv):
     
     _name = 'tempstatistiche.analisi'
     _description = 'temporaneo per la stampa delle analisi del venduto'
-    _columns = {'analisi_id': fields.many2one('analisi.venduto', 'ID_Analisi'),
+    _columns = {
                 'valore1': fields.float('Totale1', digits=(25,2)),
                 'valore2': fields.float('Totale2', digits=(25,2)),
                 'valore3': fields.float('Totale3', digits=(25,2)),
-                'range1': fields.char('Range1', size=20),
-                'range2': fields.char('Range2', size=20),
-                'range3': fields.char('Range3', size=20),
-                'partner':fields.char('Cliente', size=20),
-                'agente':fields.char('Agente', size=20),
+                'partner_id':fields.many2one('res.partner', 'Cliente'),
+                'partner':fields.char('Cliente', size=70),
+                'agente':fields.char('Agente', size=70),
                 
                 }
+    _order = 'agente, valore1, partner'
     
 
     def carica_doc(self, cr,uid,parametri,context):
@@ -50,75 +50,70 @@ class tempstatistiche_analisi(osv.osv):
         analisi_obj = self.pool.get('analisi.venduto')
         agente_obj = self.pool.get('sale.agent')
         partner_obj = self.pool.get('res.partner')
-        v = {}
-        #import pdb;pdb.set_trace()
-        if parametri.periodo1 and parametri.partner:
-            filtro = [('name', '=', parametri.partner.id), ('periodo_id','=',parametri.periodo1.id)]
-        elif parametri.periodo1 and parametri.agente:
+        
+        if parametri.partner:
+            partner_ids = parametri.partner.id
+        elif parametri.agente:
             filtro_ag =[('agent_id','=',parametri.agente.id)]
             partner_ids = partner_obj.search(cr, uid, filtro_ag)
-            
-            filtro =[('periodo_id','=',parametri.periodo1.id), ('name','in',partner_ids)]
         else:
-            filtro = [('periodo_id','=',parametri.periodo1.id)]
+            partner_ids= partner_obj.search(cr, uid, [])
+        if partner_ids:
+            for partner in partner_obj.browse(cr, uid, partner_ids):
+              if partner.venduto:
                 
-        idriga1 = analisi_obj.search(cr, uid, filtro)
-        if parametri.periodo2 and parametri.partner:
-            filtro2 = [('name', '=', parametri.partner.id), ('periodo_id','=',parametri.periodo2.id)]
-        elif parametri.periodo2 and parametri.agente:
-            filtro_ag =[('agent_id','=',parametri.agente.id)]
-            partner_ids = partner_obj.search(cr, uid, filtro_ag)
-            
-            filtro2 =[('periodo_id','=',parametri.periodo2.id), ('name','in',partner_ids)]
-        else:
-            filtro2 = [('periodo_id','=',parametri.periodo2.id)]
-                
-        idriga2 = analisi_obj.search(cr, uid, filtro2)
-        if parametri.periodo3 and parametri.partner:
-            filtro3 = [('name', '=', parametri.partner.id), ('periodo_id','=',parametri.periodo3.id)]
-        elif parametri.periodo3 and parametri.agente:
-            filtro_ag =[('agent_id','=',parametri.agente.id)]
-            partner_ids = partner_obj.search(cr, uid, filtro_ag)
-            
-            filtro3 =[('periodo_id','=',parametri.periodo3.id), ('name','in',partner_ids)]
-        else:
-            filtro3 = [('periodo_id','=',parametri.periodo2.id)]
-                
-        idriga3 = analisi_obj.search(cr, uid, filtro3)
-        if idriga1:
-            
-            for riga in analisi_obj.browse(cr, uid,idriga1):
-        #        riga = analisi_obj.browse(cr, uid,idriga1[0])
-                rigawr={#'anlisi_id':riga.id,
-                         'range1':riga.periodo_id.name,
-                         'valore1':riga.totale,
-                         'partner':riga.name.name,
-                         'agente':riga.name.agent_id.name,
-                         }
-                ok = self.create(cr,uid,rigawr)
-        if idriga2:
-            for riga2 in analisi_obj.browse(cr, uid, idriga2):
-                cerca2 = [('partner','=',riga2.name.name)]
-                idtemp2 = self.search(cr, uid, cerca2)
-                if idtemp2:
-                    riga_temp = self.browse(cr,uid,idtemp2)[0]
-                    rigawr={#'anlisi_id':riga2.id,
-                            'range2':riga2.periodo_id.name,
-                             'valore2':riga2.totale,
-                             }
-                    ok = self.write(cr,uid,idtemp2,rigawr)
-        if idriga3:
-            for riga3 in analisi_obj.browse(cr, uid, idriga3):
-                cerca3 = [('partner','=',riga3.name.name)]
-                idtemp3 = self.search(cr, uid, cerca3)
-                if idtemp3:
-                    riga_temp3 = self.browse(cr,uid,idtemp3)[0]
-                    rigawr={'range3':riga3.periodo_id.name,
-                            'valore3':riga3.totale,
-                            }
-                    ok = self.write(cr,uid,idtemp3,rigawr)
-                #import pdb;pdb.set_trace()             
-                #ok = self.create(cr,uid,rigawr)
+                    cerca =[('periodo_id','=', parametri.periodo1.id), ('name', '=', partner.id)]
+                    riga_analisi = analisi_obj.search(cr, uid, cerca)
+                    #import pdb;pdb.set_trace()
+                    if riga_analisi:
+                        riga_valore = analisi_obj.browse(cr, uid, riga_analisi[0])
+                        rigawr={#'anlisi_id':riga.id,
+                            
+                                'valore1':riga_valore.totale,
+                                'partner_id':partner.id,
+                                'partner':partner.name,
+                                'agente':partner.agent_id.name,
+                                }
+                        ok = self.create(cr,uid,rigawr)
+                    cerca =[('periodo_id','=', parametri.periodo2.id) , ('name', '=', partner.id)]
+                    riga_analisi = analisi_obj.search(cr, uid, cerca)
+                    if riga_analisi:
+                        riga_valore = 0
+                        riga_valore = analisi_obj.browse(cr, uid, riga_analisi[0])
+                        trova = [('partner_id','=',partner.id)]
+                        id_temp = self.search(cr, uid, trova)
+                        if id_temp:
+                            rigawr={'valore2':riga_valore.totale,}
+                            ok = self.write(cr,uid,id_temp,rigawr)
+                            id_temp = 0
+                        else:
+                            rigawr={'valore1':0,
+                                    'partner_id':partner.id,
+                                    'partner':partner.name,
+                                    'agente':partner.agent_id.name,
+                                    'valore2':riga_valore.totale,
+                                    }
+                            ok = self.create(cr,uid,rigawr)
+                    cerca =[('periodo_id','=', parametri.periodo3.id), ('name', '=', partner.id)] 
+                    riga_analisi = analisi_obj.search(cr, uid, cerca)
+                    if riga_analisi:
+                        riga_valore = 0
+                        riga_valore = analisi_obj.browse(cr, uid, riga_analisi[0])
+                        trova = [('partner_id','=',partner.id)]
+                        id_temp = self.search(cr, uid, trova)
+                        if id_temp:
+                            rigawr={'valore3':riga_valore.totale,}
+                            ok = self.write(cr,uid,id_temp,rigawr)
+                            id_temp = 0
+                        else:
+                            rigawr={'valore1':0,
+                                    'valore2':0,
+                                    'partner_id':partner.id,
+                                    'partner':partner.name,
+                                    'agente':partner.agent_id.name,
+                                    'valore3':riga_valore.totale,
+                                    }
+                            ok = self.create(cr,uid,rigawr)
                              
         return True
     def indici_periodi(self, cr, uid, conteggio, fine, periodi_obj, context):
@@ -150,101 +145,93 @@ class tempstatistiche_analisi(osv.osv):
         partner_obj = self.pool.get('res.partner')
         v = {}
         #import pdb;pdb.set_trace() idsTipoDoc = tuple(idsTipoDoc)
+             
+        
+        
+        
         if parametri.periodo1_1:
             conteggio = parametri.periodo1.id
             fine = parametri.periodo1_1.id
-            lista_id = self.indici_periodi(cr, uid, conteggio, fine, periodi_obj, context)
-        lista_id = tuple(lista_id)
-        if parametri.periodo1_1 and parametri.partner:
-            filtro = [('name', '=', parametri.partner.id), ('periodo_id','in',lista_id)]
-        elif parametri.periodo1_1 and parametri.agente:
-            filtro_ag =[('agent_id','=',parametri.agente.id)]
-            partner_ids = partner_obj.search(cr, uid, filtro_ag)
+            lista_id1 = self.indici_periodi(cr, uid, conteggio, fine, periodi_obj, context)
             
-            filtro =[('periodo_id','in',lista_id), ('name','in',partner_ids)]
-        else:
-            filtro = [('periodo_id','in',lista_id)]
-        #import pdb;pdb.set_trace()        
-        idriga1 = analisi_obj.search(cr, uid, filtro)
-       
-        
         if parametri.periodo2_2:
             conteggio = parametri.periodo2.id
             fine = parametri.periodo2_2.id
-            lista_id = self.indici_periodi(cr, uid, conteggio, fine, periodi_obj, context)
-        if parametri.periodo2_2 and parametri.partner:
-            filtro2 = [('name', '=', parametri.partner.id), ('periodo_id','in',lista_id)]
-        elif parametri.periodo2 and parametri.agente:
-            filtro_ag =[('agent_id','=',parametri.agente.id)]
-            partner_ids = partner_obj.search(cr, uid, filtro_ag)
-            
-            filtro2 =[('periodo_id','in',lista_id), ('name','in',partner_ids)]
-        else:
-            filtro2 = [('periodo_id','in',lista_id)]
-                
-        idriga2 = analisi_obj.search(cr, uid, filtro2)
-        
-         #TODO MODIFICARE ANCHE PERIODO 3
+            lista_id2 = self.indici_periodi(cr, uid, conteggio, fine, periodi_obj, context)
         if parametri.periodo3_3:
             conteggio = parametri.periodo3.id
             fine = parametri.periodo3_3.id
-            lista_id = self.indici_periodi(cr, uid, conteggio, fine, periodi_obj, context)
-            
-        if parametri.periodo3 and parametri.partner:
-            filtro3 = [('name', '=', parametri.partner.id), ('periodo_id','in',lista_id)]
-        elif parametri.periodo3 and parametri.agente:
+            lista_id3 = self.indici_periodi(cr, uid, conteggio, fine, periodi_obj, context)
+        
+        if parametri.partner:
+            partner_ids = parametri.partner.id
+        elif parametri.agente:
             filtro_ag =[('agent_id','=',parametri.agente.id)]
             partner_ids = partner_obj.search(cr, uid, filtro_ag)
-            
-            filtro3 =[('periodo_id','in',lista_id), ('name','in',partner_ids)]
         else:
-            filtro3 = [('periodo_id','in',lista_id)]
-                
-        idriga3 = analisi_obj.search(cr, uid, filtro3)
-        if idriga1:
-            for riga in analisi_obj.browse(cr, uid,idriga1):
-                #controllo per prima se non ho già una riga con lo stesso partner
-                cerca =  [('partner','=',riga.name.name)]
-                idtemp = self.search(cr, uid, cerca)
-                if idtemp:
-                    temp=self.browse(cr, uid, idtemp)[0]
-                    rigawr={#'anlisi_id':riga.id,
-                            #'range1':temp.range1.,
-                            'valore1':temp.valore1+riga.totale,
-                            }
-                    ok = self.write(cr,uid,idtemp,rigawr)
-                else:
-                    rigawr={#'anlisi_id':riga.id,
-                         #'range1':riga.periodo_id.name,
-                         'valore1':riga.totale,
-                         'partner':riga.name.name,
-                         'agente':riga.name.agent_id.name,
-                         }
-                    ok = self.create(cr,uid,rigawr)
-        if idriga2:
-            for riga2 in analisi_obj.browse(cr, uid, idriga2):
-                cerca2 = [('partner','=',riga2.name.name)]
-                idtemp2 = self.search(cr, uid, cerca2)
-                if idtemp2:
-                    riga_temp = self.browse(cr,uid,idtemp2)[0]
-                    rigawr={#'anlisi_id':riga2.id,
-                            #'range2':riga2.periodo_id.name,
-                             'valore2':riga_temp.valore2 + riga2.totale,
-                             }
-                    ok = self.write(cr,uid,idtemp2,rigawr)
-        if idriga3:
-            for riga3 in analisi_obj.browse(cr, uid, idriga3):
-                cerca3 = [('partner','=',riga3.name.name)]
-                idtemp3 = self.search(cr, uid, cerca3)
-                if idtemp3:
-                    riga_temp3 = self.browse(cr,uid,idtemp3)[0]
-                    rigawr={#'range3':riga3.periodo_id.name,
-                            'valore3':riga_temp3.valore3 + riga3.totale,
-                            }
-                    ok = self.write(cr,uid,idtemp3,rigawr)
-                #import pdb;pdb.set_trace()             
-                #ok = self.create(cr,uid,rigawr)
-                             
+            partner_ids= partner_obj.search(cr, uid, [])
+        if partner_ids:
+            for partner in partner_obj.browse(cr, uid, partner_ids):
+                if partner.venduto:
+                    cerca =[('periodo_id','in', lista_id1), ('name', '=', partner.id)]
+                    riga_analisi = analisi_obj.search(cr, uid, cerca)
+                    if riga_analisi:
+                        for riga in analisi_obj.browse(cr, uid, riga_analisi):
+                            trova = [('partner_id','=',partner.id)]
+                            id_temp = self.search(cr, uid, trova)
+                            if id_temp:
+                                temp=self.browse(cr, uid, id_temp)[0]
+                                rigawr={'valore1':temp.valore1+riga.totale,
+                                        }
+                                ok = self.write(cr,uid,id_temp,rigawr)
+                            else:
+                                rigawr={
+                                    'partner_id':partner.id,
+                                    'partner':partner.name,
+                                    'agente':partner.agent_id.name,
+                                    'valore1':riga.totale,
+                                    }
+                                ok = self.create(cr,uid,rigawr)
+                    cerca =[('periodo_id','in', lista_id2), ('name', '=', partner.id)]
+                    riga_analisi = analisi_obj.search(cr, uid, cerca)
+                    if riga_analisi:
+                        for riga in analisi_obj.browse(cr, uid, riga_analisi):
+                            trova = [('partner_id','=',partner.id)]
+                            id_temp = self.search(cr, uid, trova)
+                            #import pdb;pdb.set_trace()
+                            if id_temp:
+                                temp=self.browse(cr, uid, id_temp)[0]
+                                rigawr = {'valore2':temp.valore2+riga.totale,}
+                                ok = self.write(cr,uid,id_temp,rigawr)
+                            else:
+                                rigawr={
+                                        'partner_id':partner.id,
+                                        'partner':partner.name,
+                                        'agente':partner.agent_id.name,
+                                        'valore1':0,
+                                        'valore2':riga.totale,
+                                    }
+                                ok = self.create(cr,uid,rigawr)
+                    cerca =[('periodo_id','in', lista_id3), ('name', '=', partner.id)]
+                    riga_analisi = analisi_obj.search(cr, uid, cerca)
+                    if riga_analisi:
+                        for riga in analisi_obj.browse(cr, uid, riga_analisi):
+                            trova = [('partner_id','=',partner.id)]
+                            id_temp = self.search(cr, uid, trova)
+                            if id_temp:
+                                temp=self.browse(cr, uid, id_temp)[0]
+                                rigawr = {'valore3':temp.valore3+riga.totale,}
+                                ok = self.write(cr,uid,id_temp,rigawr)
+                            else:
+                                rigawr={
+                                        'partner_id':partner.id,
+                                        'partner':partner.name,
+                                        'agente':partner.agent_id.name,
+                                        'valore1':0,
+                                        'valore2':0,
+                                        'valore3':riga.totale,
+                                    }
+                                ok = self.create(cr,uid,rigawr)
         return True
         
             
@@ -266,6 +253,7 @@ class stampa_analisi_venduto (osv.osv_memory):
                 'periodo3_3':fields.many2one('account.period', 'A Periodo anno n-2'),
                 'partner':fields.many2one('res.partner', 'Cliente'),
                 'agente':fields.many2one('sale.agent', 'Agente'),
+                'export_csv':fields.boolean('Genera CSV')
                 }
     
     def _build_contexts(self, cr, uid, ids, data, context=None):
@@ -321,7 +309,22 @@ class stampa_analisi_venduto (osv.osv_memory):
         data['form'] = self.read(cr, uid, ids, ['dadata1_1', 'dadata1_2', 'dadata2_1', 'dadata2_2', 'dadata3_1', 'dadata3_2', 'partner', 'agente'])[0]
         used_context = self._build_contexts(cr, uid, ids, data, context=context)
         data['form']['parameters'] = used_context
-        return self._print_report(cr, uid, ids, data, context=context)
+        parametri = self.browse(cr,uid,ids)[0]
+        if parametri.export_csv:
+            return  {
+                             'name': 'Export Analisi Vendite',
+                             'view_type': 'form',
+                             'view_mode': 'form',
+                             'res_model': 'crea_csv_analisi_v',
+                             'type': 'ir.actions.act_window',
+                             'target': 'new',
+                             'context': context                            
+                             
+                             }
+        else:
+            return self._print_report(cr, uid, ids, data, parametri, context=None)
+        return
+        
     
     def view_init(self, cr, uid, fields_list, context=None):
         # import pdb;pdb.set_trace()
@@ -362,7 +365,7 @@ class stampa_analisi_venduto (osv.osv_memory):
             else:
                 ok = self.pool.get('tempstatistiche.analisi').carica_doc(cr,uid,parametri,context)
         
-        return self._print_report(cr, uid, ids, data, context=context)
+        return self.check_report(cr, uid, ids, context=None)
     
     def on_change_value(self, cr, uid, ids, periodo1, context):
         
@@ -427,3 +430,52 @@ class stampa_analisi_venduto (osv.osv_memory):
         return {'value': v}
                     
 stampa_analisi_venduto()
+
+
+class crea_csv_analisi_v(osv.osv_memory):
+    _name = "crea_csv_analisi_v"
+    _description = "Crea il csv dal temporaneo analisi delle vendite"
+    _columns = {
+                    'state': fields.selection((('choose', 'choose'), # choose accounts
+                                               ('get', 'get'), # get the file
+                                   )),
+                    #'nomefile':fields.char('Nome del file',size=20,required = True)
+                    'data': fields.binary('File', readonly=True),
+
+                    }
+    _defaults = {
+                 'state': lambda * a: 'choose',
+                 }
+    
+    def generacsvanalisi(self, cr, uid, ids,context=None):
+        if ids:
+            stampa_obj = self.pool.get('stampa.analisi.venduto')
+            parametri = stampa_obj.browse(cr, uid, ids)[0]
+            idts = self.pool.get('tempstatistiche.analisi').search(cr,uid,[])
+            if idts:
+                #import pdb;pdb.set_trace()
+                File = """"""""
+                Record =""
+                Record += '"'+"Agente"+'";'
+                Record += '"'+"Cliente"+'";'
+                Record += '"'+ parametri.periodo1.name + '-' + parametri.periodo1_1.name +'";'
+                Record += '"'+ parametri.periodo2.name + '-' + parametri.periodo2_2.name +'";'
+                Record += '"'+ parametri.periodo3.name + '-' + parametri.periodo3_3.name +'";'
+                Record += "\r\n"
+                for riga in self.pool.get('tempstatistiche.analisi').browse(cr,uid,idts, context):
+                    Record += '"'+ riga.agente +'";'
+                    Record += '"'+ riga.partner_id.name +'";'
+                    Record += '"'+ str(riga.valore1) + '";' 
+                    Record += '"'+ str(riga.valore2) + '";'
+                    Record += '"'+ str(riga.valore3) + '";'
+                    Record += "\r\n"
+                #import pdb;pdb.set_trace()
+                File += Record
+                out = base64.encodestring(File)   
+                           
+                return self.write(cr, uid, ids, {'state':'get', 'data':out}, context=context)
+            else:
+                return {'type': 'ir.actions.act_window_close'}
+        
+
+crea_csv_analisi_v()    
